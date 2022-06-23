@@ -1,11 +1,13 @@
 import json
 import datetime
+
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.generic import RedirectView
+from django.http import HttpResponse
 
 from .models import *
 from .utils import Utils
@@ -21,6 +23,27 @@ class StoreView(View):
         products = Product.objects.all()
         context = {'products': products, 'cart_items': cart_items}
         return render(request, self.store_template, context)
+
+
+class SearchView(View):
+    store_template = 'store/store.html'
+    not_found_template = 'store/item_not_found.html'
+
+    def get(self, request):
+        found = []
+        search_for = str(request.GET["search"])
+        print(search_for)
+        data = Utils().get_cart_data(request)
+        cart_items = data.cart_items
+        products = Product.objects.all()
+        for product in products:
+            if search_for.lower() in product.name.lower():
+                found.append(product)
+        context = {'products': found, 'cart_items': cart_items}
+        if found:
+            return render(request, self.store_template, context)
+        else:
+            return render(request, self.not_found_template, context)
 
 
 class CartView(View):

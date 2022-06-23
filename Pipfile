@@ -13,6 +13,7 @@ boto3 = "*"
 gunicorn = "*"
 whitenoise = "*"
 dj-database-url = "*"
+products = "*"
 
 [dev-packages]
 
